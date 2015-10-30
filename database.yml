@@ -1,0 +1,7 @@
+development:
+  adapter: mysql2
+  database: netops_codings
+  host: localhost
+  username: root
+  password: <%= ENV['DB_PASSWORD'] %>
+  encoding: utf8
