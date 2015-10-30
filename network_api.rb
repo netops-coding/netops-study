@@ -4,9 +4,12 @@ require "sinatra"
 require "sinatra/reloader"
 require "net/netconf"
 require "net/netconf/jnpr"
+require "erb"
+
+database = File.read("database.yml")
 
 # DB設定ファイルの読み込み
-ActiveRecord::Base.configurations = YAML.load_file("database.yml")
+ActiveRecord::Base.configurations = YAML.load(ERB.new(database).result)
 ActiveRecord::Base.establish_connection(:development)
 
 # クラス作成
@@ -15,11 +18,11 @@ class SetInterface
     @id = id
   end
 
-  class RouterDB < ActiveRecord::Base
+  class NetopsCoding < ActiveRecord::Base
   end
 
   def set_interface
-    value = RouterDB.find_by id: (@id)
+    value = NetopsCoding.find_by id: (@id)
     id = value.id
     unit = value.unit
     vlan = value.unit
@@ -38,15 +41,15 @@ Netconf::SSH.new(target: ENV['ROUTER_IP'], username: ENV['ROUTER_USER'], passwor
   end
 end
 
+# ここがAPIを受け付けてrouterに設定をする部分
 post "/set_interface" do
-  # リクエスト解析
   reqData = JSON.parse(request.body.read.to_s)
   id = reqData["id"]
-
   set_config = SetInterface.new(id)
   set_config.set_interface
-
-  # レスポンスコード
   status 202
 end
 
+get "/" do
+  "Hello NetOps Coding#1"
+end
