@@ -5,3 +5,4 @@ development:
   username: <%= ENV['DB_USER'] %>
   password: <%= ENV['DB_PASSWORD'] %>
   encoding: utf8
+#test
